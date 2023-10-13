@@ -38,8 +38,8 @@ jobs:
       
       - name: Build Documentation
         working-directory: ./frontend/AI-Hackathon
-        run: npm run docs
+        run: npm run docs:ci
 
       - name: Run Build
         working-directory: ./frontend/AI-Hackathon
-        run: npm run build
+        run: npm run build:ci

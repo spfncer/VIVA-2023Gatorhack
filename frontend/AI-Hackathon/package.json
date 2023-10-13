@@ -4,11 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --karma-config karma.conf.js",
+    "docs": "npx compodoc -s -p tsconfig.doc.json",
+    "build": "ng build",
     "test:ci": "ng test --karma-config karma.conf.js --watch=false --browsers=ChromeHeadlessCustom",
-    "docs": "npx compodoc -s -p tsconfig.doc.json"
+    "docs:ci": "npx compodoc -p tsconfig.doc.json",
+    "build:ci": "ng build --prod"
   },
   "private": true,
   "dependencies": {
