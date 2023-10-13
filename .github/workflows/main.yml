@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Unit Tests
         working-directory: ./frontend/AI-Hackathon
-        run: npm run test
+        run: npm run test:ci
       
       - name: Build Documentation
         working-directory: ./frontend/AI-Hackathon
