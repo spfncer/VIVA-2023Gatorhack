@@ -10,7 +10,7 @@
     "build": "ng build",
     "test:ci": "ng test --karma-config karma.conf.js --watch=false --browsers=ChromeHeadlessCustom",
     "docs:ci": "npx compodoc -p tsconfig.doc.json",
-    "build:ci": "ng build --prod"
+    "build:ci": "ng build"
   },
   "private": true,
   "dependencies": {
