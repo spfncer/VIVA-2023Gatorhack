@@ -15,6 +15,7 @@ jobs:
 
       # This should speedup the CI tests, could be removed if needed. It just caches node modules. I've done this before in other projects
       - name: Cache node modules
+        path: ~/frontend/AI-Hackathon/.npm
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
