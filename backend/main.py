@@ -44,7 +44,7 @@ def speakIt(text):
                 print("Did you set the speech resource key and region values?")
 
 
-@app.get("/speak")
+@app.get("/api/speak")
 def read_root(text: str):
     return speakIt(text)
 
