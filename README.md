@@ -1,6 +1,6 @@
 # AI-Hackathon
 
-![Angular Build Status](https://github.com/https://github.com/spfncer/AI-Hackathon/actions/workflows/main.yml/badge.svg?event=push)
+![Angular Build Status](https://github.com/spfncer/AI-Hackathon/actions/workflows/main.yml/badge.svg?event=push)
 
 This is our project, wow!
 
