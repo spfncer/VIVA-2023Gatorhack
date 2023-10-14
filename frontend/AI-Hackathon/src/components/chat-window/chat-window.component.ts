@@ -14,7 +14,7 @@ import { AudioFetcherService } from 'src/services/audio-fetcher/audio-fetcher.se
 export class ChatWindowComponent {
   text = "";
 
-  constructor(private api: ApiService, private audioPlayer: AudioPlayerService, private audioFetcher : AudioFetcherService) {
+  constructor(private api: ApiService, private audioPlayer: AudioPlayerService, private audioFetcher: AudioFetcherService) {
 
     // Sample of how to use API Service
     this.api.getHelloWorld().subscribe((data) => {
@@ -23,20 +23,24 @@ export class ChatWindowComponent {
     });
   }
 
-  ngOnInit() {
-    this.audioFetcher.getAudio("hello world").subscribe(data => {
-      // do something with audio data
-      console.log("Audio data");
-      console.log(data);
-    });
-  }
-
-  private playSound() {
+  public playSound() {
     // Sample of how to use audio player service
-    this.audioPlayer.setAudioSource("assets/mixkit-arcade-retro-game-over-213.wav");
-    this.audioPlayer.observeAudioState().subscribe((data) => {
+    this.api.postQuery("Go Gators!").subscribe((data: any) => {
       console.log(data);
+      const stringifiedData = JSON.stringify(data);
+      console.log("With Stringify :", stringifiedData);
+
+      // Parse from JSON
+      const parsedJson = JSON.parse(stringifiedData);
+      console.log(parsedJson)
+
+      const url = "data:audio/wav;base64," + parsedJson.audio;
+      this.audioPlayer.setAudioSource(url);
+      this.audioPlayer.observeAudioState().subscribe((data) => {
+        console.log(data);
+      });
+      this.audioPlayer.play();
+
     });
-    this.audioPlayer.play();
   }
 }

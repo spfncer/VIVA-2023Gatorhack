@@ -4,11 +4,25 @@ from fastapi import FastAPI
 import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech.audio import AudioOutputStream
 from fastapi.responses import Response
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
+import base64
 import io
 
 load_dotenv(".env")
 app = FastAPI()
 
+# Prevent CORS BS
+origins = ['http://localhost:3000', 'http://localhost:4200']
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def speakIt(text):
     # Config object gets key and region from enviornment variables
@@ -30,10 +44,16 @@ def speakIt(text):
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print("Speech synthesized for text [{}]".format(text))
         # Build response object using result.audio_data
-        response = Response(content=result.audio_data, media_type="audio/wav")
-        response.headers[
-            "Content-Disposition"
-        ] = "attachment; filename=synthesized_audio.wav"
+        response = {
+            "audio" : base64.b64encode(result.audio_data),
+            "text" : "hi",
+            "viseme" : "there"
+        }
+        
+        # Response(content=result.audio_data, media_type="audio/wav")
+        # response.headers[
+        #     "Content-Disposition"
+        # ] = "attachment; filename=synthesized_audio.wav"
         return response
     elif result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = result.cancellation_details
@@ -44,8 +64,10 @@ def speakIt(text):
                 print("Did you set the speech resource key and region values?")
 
 
-@app.get("/api/speak")
+@app.get("/speak")
 def read_root(text: str):
+    print(text)
+    return JSONResponse(content=jsonable_encoder(speakIt(text)))
     return speakIt(text)
 
 

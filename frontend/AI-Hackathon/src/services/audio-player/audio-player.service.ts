@@ -36,37 +36,37 @@ export class AudioPlayerService {
 
   constructor() { }
 
-  private audioStreamObservable()  {
-    return new Observable(observer =>  {
-        //this.audioObj.muted = true;
-        //this.audioObj.autoplay = true;
-        this.audioObj.play();
+  private audioStreamObservable() {
+    return new Observable(observer => {
+      //this.audioObj.muted = true;
+      //this.audioObj.autoplay = true;
+      this.audioObj.play();
 
-        const handler = (event: Event) => {
-            this.updateStateWithEvent(event);
-            observer.next(event); 
-        };
+      const handler = (event: Event) => {
+        this.updateStateWithEvent(event);
+        observer.next(event);
+      };
 
-        this.addEvents(this.audioObj, this.audioEvents, handler);
+      this.addEvents(this.audioObj, this.audioEvents, handler);
 
-        return () =>  {
-            this.audioObj.pause();
-            this.audioObj.currentTime = 0;
-            this.removeEvents(this.audioObj, this.audioEvents, handler);
-            this.resetState();
-        }
+      return () => {
+        this.audioObj.pause();
+        this.audioObj.currentTime = 0;
+        this.removeEvents(this.audioObj, this.audioEvents, handler);
+        this.resetState();
+      }
     });
   }
 
-  private addEvents(obj: HTMLAudioElement, events: string[], handler: (event: Event)=>void): void  {
-    events.forEach((event: string) =>  {
-        obj.addEventListener(event, handler);
+  private addEvents(obj: HTMLAudioElement, events: string[], handler: (event: Event) => void): void {
+    events.forEach((event: string) => {
+      obj.addEventListener(event, handler);
     });
   }
 
-  private removeEvents(obj: HTMLAudioElement, events: string[], handler: (event: Event)=>void): void  {
-    events.forEach((event: string) =>  {
-        obj.addEventListener(event, handler);
+  private removeEvents(obj: HTMLAudioElement, events: string[], handler: (event: Event) => void): void {
+    events.forEach((event: string) => {
+      obj.addEventListener(event, handler);
     });
   }
 
@@ -74,8 +74,8 @@ export class AudioPlayerService {
    * Updates the state of the audio player with each occuring audio event
    * @param {Event} event the event that occurred
    */
-  private updateStateWithEvent(event: Event)  {
-    switch (event.type)  {
+  private updateStateWithEvent(event: Event) {
+    switch (event.type) {
       case 'canplay':
         this.audioStreamState.canplay = true;
         this.audioStreamState.duration = this.audioObj.duration;
@@ -102,7 +102,7 @@ export class AudioPlayerService {
   /**
    * Helper function that resets the state of the audio player.
    */
-  private resetState()  {
+  private resetState() {
     this.audioStreamState = {
       playing: false,
       readableCurrentTime: '',
@@ -115,11 +115,11 @@ export class AudioPlayerService {
   }
 
   /**
-   * Sets the source for the audio
+   * Sets the source for the audio using a file location
    * @param {string} file_url the audio file location
    * @returns 
    */
-  public setAudioSource(file_url: string)  {
+  public setAudioSource(file_url: string) {
     this.audioObj.src = file_url;
     this.audioObj.load();
   }
@@ -127,14 +127,14 @@ export class AudioPlayerService {
   /**
    * Play the audio file which is loaded
    */
-  public play()  {
-    this.audioStreamObservable().pipe(takeUntil(this.stop$)).subscribe(() => {});
+  public play() {
+    this.audioStreamObservable().pipe(takeUntil(this.stop$)).subscribe(() => { });
   }
 
   /**
    * Pause the audio that is playing
    */
-  public pause()  {
+  public pause() {
     this.audioObj.pause();
   }
 
@@ -157,7 +157,7 @@ export class AudioPlayerService {
    * Observe the status of the audio stream
    * @returns {Observable<AudioStreamState>} an Observable of the audio stream status
    */
-  public observeAudioState(): Observable<AudioStreamState>  {
+  public observeAudioState(): Observable<AudioStreamState> {
     return this.state$.asObservable();
   }
 }
