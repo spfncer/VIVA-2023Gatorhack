@@ -1,12 +1,15 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { InternetConnectionService } from './internet-connection.service';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('InternetConnectionService', () => {
   let service: InternetConnectionService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientModule]
+    });
     service = TestBed.inject(InternetConnectionService);
   });
 
