@@ -24,6 +24,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+blends = []
+def viseme_cb(evt):
+    print("Viseme event received: audio offset: {}ms, viseme id: {}.".format(evt.audio_offset / 10000, evt.viseme_id))
+
+    # `Animation` is an xml string for SVG or a json string for blend shapes
+    animation = evt.animation
+    print(animation)
+    if (animation is not ""):
+        blends.append(animation)
+
+
 def speakIt(text):
     # Config object gets key and region from enviornment variables
     speech_config = speechsdk.SpeechConfig(
@@ -32,22 +43,34 @@ def speakIt(text):
     )
 
     # The language of the voice that speaks.
-    speech_config.speech_synthesis_voice_name = "en-US-JennyNeural"
-
+    # speech_config.speech_synthesis_voice_name = "en-US-JennyNeural"
     speech_synthesizer = speechsdk.SpeechSynthesizer(
         speech_config=speech_config, audio_config=None
     )
 
+    ssml = f'''
+    <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="en-US">
+        <voice name="en-US-JennyNeural">
+            <mstts:viseme type="FacialExpression"/>
+            {text}
+        </voice>
+    </speak>
+    '''
+    
     # result contains the audio data which can be saved as a wav file
-    result = speech_synthesizer.speak_text_async(text).get()
+    speech_synthesizer.viseme_received.connect(viseme_cb)
+    # speech_synthesizer.synthesis_completed.connect(viseme_cb)
+    result = speech_synthesizer.speak_ssml_async(ssml).get()
+    print(result)
+    
 
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print("Speech synthesized for text [{}]".format(text))
         # Build response object using result.audio_data
         response = {
             "audio" : base64.b64encode(result.audio_data),
-            "text" : "hi",
-            "viseme" : "there"
+            "text" : text,
+            "viseme" : blends
         }
         
         # Response(content=result.audio_data, media_type="audio/wav")
@@ -66,9 +89,8 @@ def speakIt(text):
 
 @app.get("/speak")
 def read_root(text: str):
-    print(text)
+    blends.clear()
     return JSONResponse(content=jsonable_encoder(speakIt(text)))
-    return speakIt(text)
 
 
 @app.get("/")

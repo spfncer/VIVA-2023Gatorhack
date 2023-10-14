@@ -25,14 +25,14 @@ export class ChatWindowComponent {
 
   public playSound() {
     // Sample of how to use audio player service
-    this.api.postQuery("Go Gators!").subscribe((data: any) => {
+    this.api.postQuery("The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start.").subscribe((data: any) => {
       console.log(data);
       const stringifiedData = JSON.stringify(data);
       console.log("With Stringify :", stringifiedData);
 
       // Parse from JSON
       const parsedJson = JSON.parse(stringifiedData);
-      console.log(parsedJson)
+      console.log(parsedJson.viseme);
 
       const url = "data:audio/wav;base64," + parsedJson.audio;
       this.audioPlayer.setAudioSource(url);

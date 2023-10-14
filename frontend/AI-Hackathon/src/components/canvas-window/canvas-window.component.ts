@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as THREE from 'three';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { randFloat } from 'three/src/math/MathUtils';
 
 declare var window: any;
 
@@ -42,6 +43,8 @@ export class CanvasWindowComponent implements OnInit {
         this.loader.load('assets/man.glb', (gltf: any) => {
             this.model = gltf.scene;
             this.scene.add(this.model);
+            console.log(this.model);
+            this.model.children[0].children[1].morphTargets = true;
         }, undefined, function (error: any) {
             console.error(error);
         });
@@ -88,7 +91,12 @@ export class CanvasWindowComponent implements OnInit {
             const elapsedTime = this.clock.getElapsedTime();
 
             // Update animation objects
+            if (this.model) {
+                // console.log(this.model);
 
+                this.model.children[0].children[1].morphTargetInfluences[0] = randFloat(0, 1);
+                this.model.children[0].children[1].updateMorphTargets();
+            }
 
             // Render
             this.renderer.render(this.scene, this.camera);
