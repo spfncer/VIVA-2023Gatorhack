@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { ChatWindowComponent} from '../components/chat-window/chat-window.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -11,10 +12,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ChatWindowComponent
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     NgbModule
   ],
-  providers: [],
+  providers: [ ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

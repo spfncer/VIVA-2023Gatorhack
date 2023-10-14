@@ -13,6 +13,13 @@ export class ApiService {
     constructor(private http: HttpClient)  {}
 
     /**
+     * Method to test server connection by getting hello world
+     */
+    getHelloWorld(): Observable<any>  {
+        return this.http.get<any>(`/api`);
+    }
+
+    /**
      * Post a query to the backend server
      * @param {string} query the query to send to the server
      * @returns {Observable<any>} an angular observable to subscribe to in order to receive server response

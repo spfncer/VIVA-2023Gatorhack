@@ -67,7 +67,7 @@
           "configurations": {
             "production": {
               "browserTarget": "AI-Hackathon:build:production",
-              "proxyConfig": "proxy.dev.conf.json"
+              "proxyConfig": "proxy.prod.conf.json"
             },
             "development": {
               "browserTarget": "AI-Hackathon:build:development",
