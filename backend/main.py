@@ -179,7 +179,7 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")  # Using the imported API_KEY
 
 # class to get the question and conversation id from the request body
 class gptRequestBody(BaseModel):
-    question: str | None = None
+    question: str 
     conversation_ID: str
 
 
@@ -188,7 +188,7 @@ class gptRequestBody(BaseModel):
 async def getNextChat():
     global nextChatId
     nextChatId += 1
-    return jsonable_encoder({"conversation_ID": nextChatId})
+    return jsonable_encoder({"conversation_ID": str(nextChatId)})
 
 
 # route that takes in a question and conversation id and returns the answer

@@ -20,15 +20,22 @@ export class ApiService {
     }
 
     /**
+     * Get the next chat id
+     */
+    getConversationId() {
+        return this.http.get<any>(`/api/api/getNextChat`);
+    }
+
+    /**
      * Post a query to the backend server
      * @param {string} query the query to send to the server
      * @returns {Observable<any>} an angular observable to subscribe to in order to receive server response
      */
-    postQuery(query: string): Observable<any> {
+    postQuery(query: string, conversation_ID: any): Observable<any> {
         let headers = new HttpHeaders();
         headers.append('Content-Type', 'application/json');
-        let params = new HttpParams().set("text", query);
-        return this.http.get<any>(`/api/speak`, { headers, params });
+        console.log(conversation_ID);
+        return this.http.post<any>(`/api/api/gptSpeak`, { "question": query, "conversation_ID": conversation_ID }, { headers });
     }
 
 }

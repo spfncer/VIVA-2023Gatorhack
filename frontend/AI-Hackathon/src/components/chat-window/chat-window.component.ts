@@ -21,6 +21,7 @@ export class ChatWindowComponent {
   hasInitialized = false;
 
   private wasPlaying = false;
+  private conversationID = null;
 
   constructor(private api: ApiService, private audioPlayer: AudioPlayerService, private speechRecognizer: SpeechToTextService) {
     // Sample of how to use API Service
@@ -29,6 +30,12 @@ export class ChatWindowComponent {
       console.log(this.promptText);
     });
 
+    // Get Convo ID
+    this.api.getConversationId().subscribe((data) => {
+      this.conversationID = data.conversation_ID;
+    });
+
+    // Setup Speech
     this.speechRecognizer.observeRecognizedText().subscribe((data) => {
       this.promptText = data;
       if (!this.promptText) {
@@ -36,6 +43,7 @@ export class ChatWindowComponent {
       }
     });
 
+    // Setup Audio
     this.audioPlayer.observeAudioState().subscribe((state: AudioStreamState) => {
       if (state.currentTime == state.duration && state.playing == false && state.playing != this.wasPlaying) {
         this.makeQuery();
@@ -53,7 +61,7 @@ export class ChatWindowComponent {
         this.waiting = true;
         this.transcript += "You: " + this.promptText + '\n';
         this.scrollTranscript();
-        this.api.postQuery(this.promptText).subscribe((data: any) => {
+        this.api.postQuery(this.promptText, this.conversationID).subscribe((data: any) => {
           this.promptText = '';
           const stringifiedData = JSON.stringify(data);
           // Parse from JSON
