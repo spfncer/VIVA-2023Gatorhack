@@ -118,10 +118,10 @@ def speakIt(text):
     speech_synthesizer = speechsdk.SpeechSynthesizer(
         speech_config=speech_config, audio_config=None
     )
-
+    
     ssml = f'''
     <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="en-US">
-        <voice name="en-US-JennyNeural">
+        <voice name="en-US-JasonNeural">
             <mstts:viseme type="FacialExpression"/>
             {text}
         </voice>

@@ -1,7 +1,7 @@
 <div id="innerWindow">
     <app-canvas-window [viseme]="viseme"></app-canvas-window>
-    <button mat-button (click)="this.playSound()">Click me!</button>
+    <button mat-button (click)="this.makeQuery()">Click me!</button>
     <div>
-        <p>{text}</p>
+        <p class="transcript">{{text}}</p>
     </div>
 </div>
