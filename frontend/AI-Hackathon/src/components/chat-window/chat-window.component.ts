@@ -52,6 +52,7 @@ export class ChatWindowComponent {
       if (value == false) {
         this.waiting = true;
         this.transcript += "You: " + this.promptText + '\n';
+        this.scrollTranscript();
         this.api.postQuery(this.promptText).subscribe((data: any) => {
           this.promptText = '';
           const stringifiedData = JSON.stringify(data);
@@ -64,8 +65,16 @@ export class ChatWindowComponent {
           this.audioPlayer.setAudioSource(url);
           this.audioPlayer.play();
           this.waiting = false;
+          this.scrollTranscript();
         });
       }
     });
+  }
+
+  private scrollTranscript() {
+    const transcriptBox = document.getElementById("transcript-text");
+    if (transcriptBox != null) {
+      transcriptBox.scrollTop = transcriptBox?.scrollHeight;
+    }
   }
 }
