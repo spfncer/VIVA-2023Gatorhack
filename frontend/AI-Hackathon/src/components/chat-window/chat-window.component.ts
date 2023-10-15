@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from 'src/services/api/api.service';
 import { AudioPlayerService } from 'src/services/audio-player/audio-player.service';
+import { SpeechToTextService } from 'src/services/speech-to-text/speech-to-text.service';
 
 /**
  * Displays a chat window
@@ -14,16 +15,29 @@ export class ChatWindowComponent {
   text = "";
   viseme: any;
 
-  constructor(private api: ApiService, private audioPlayer: AudioPlayerService) {
+  constructor(private api: ApiService, private audioPlayer: AudioPlayerService, private speechRecognizer: SpeechToTextService) {
 
     // Sample of how to use API Service
     this.api.getHelloWorld().subscribe((data) => {
       this.text = data;
       console.log(this.text);
     });
+
+    this.speechRecognizer.observeRecognizedText().subscribe((data) => {
+      console.log(data);
+    });
+
+    this.speechRecognizer.start();
+
   }
 
-  public playSound() {
+
+  private playSound() {
+    // Sample of how to use audio player service
+    this.audioPlayer.setAudioSource("assets/mixkit-arcade-retro-game-over-213.wav");
+    this.audioPlayer.observeAudioState().subscribe((data) => {
+      console.log(data);
+
     // Sample of how to use audio player service
     this.api.postQuery("The Neural Net Workers Have Almost Finished their project.").subscribe((data: any) => {
       //console.log(data);
@@ -40,7 +54,6 @@ export class ChatWindowComponent {
         console.log(data);
       });
       this.audioPlayer.play();
-
     });
   }
 }
