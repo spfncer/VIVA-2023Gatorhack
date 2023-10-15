@@ -197,6 +197,11 @@ async def create_item(item: gptRequestBody):
     return ask_gpt3(item.conversation_ID, item.question)
 
 
+@app.post("/api/gptSpeak")
+async def create_newitem(item: gptRequestBody):
+    return speakIt(ask_gpt3(item.conversation_ID, item.question)["answer"])
+
+
 conversation_history = {}
 last_messages = {}
 
