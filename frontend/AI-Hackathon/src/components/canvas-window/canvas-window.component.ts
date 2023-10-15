@@ -48,10 +48,10 @@ export class CanvasWindowComponent implements OnInit {
     ngOnInit(): void {
         this.canvas = document.getElementById('canvas-box');
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
         this.scene.add(ambientLight);
 
-        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        const pointLight = new THREE.PointLight(0xffffff, 0.75);
         pointLight.position.x = 2;
         pointLight.position.y = 2;
         pointLight.position.z = 2;
@@ -76,8 +76,8 @@ export class CanvasWindowComponent implements OnInit {
         });
 
         const canvasSizes = {
-            width: window.innerWidth,
-            height: window.innerHeight,
+            width: window.innerWidth / 2,
+            height: window.innerHeight / 3,
         };
 
         this.camera = new THREE.PerspectiveCamera(
@@ -97,12 +97,12 @@ export class CanvasWindowComponent implements OnInit {
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
         });
-        this.renderer.setClearColor(0xe232222, 1);
+        this.renderer.setClearColor(0xD52B1E, 1);
         this.renderer.setSize(canvasSizes.width, canvasSizes.height);
 
         window.addEventListener('resize', () => {
-            canvasSizes.width = window.innerWidth;
-            canvasSizes.height = window.innerHeight;
+            canvasSizes.width = window.innerWidth / 2;
+            canvasSizes.height = window.innerHeight / 3;
 
             this.camera.aspect = canvasSizes.width / canvasSizes.height;
             this.camera.updateProjectionMatrix();

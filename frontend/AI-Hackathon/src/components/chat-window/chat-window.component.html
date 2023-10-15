@@ -1,6 +1,12 @@
 <div id="innerWindow">
-    <img class="the" src="assets/img/temp.jpg" title="Guy holding a fruit idk">
-    <app-canvas-window [viseme]="viseme">
-    </app-canvas-window>
-    <button mat-button (click)="this.playSound()">Click me!</button>
+    <div class="transcript">
+        <button *ngIf="hasInitialized == false" style="text-align: center;"
+            (click)="makeQuery(); hasInitialized = true;">Begin
+            Your
+            Conversation</button>
+        <p *ngIf="hasInitialized == true" style="white-space: pre; margin: none;" class="transcript-text">
+            {{transcript +
+            promptText}}</p>
+    </div>
+    <app-canvas-window [viseme]="viseme"></app-canvas-window>
 </div>

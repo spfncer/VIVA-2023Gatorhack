@@ -3,11 +3,12 @@ import { AppComponent } from './app.component';
 import { ChatWindowComponent } from 'src/components/chat-window/chat-window.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CanvasWindowComponent } from 'src/components/canvas-window/canvas-window.component';
+import { NavbarComponent } from 'src/components/navbar/navbar.component';
 
 describe('AppComponent', () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [HttpClientModule],
-    declarations: [AppComponent, ChatWindowComponent, CanvasWindowComponent]
+    declarations: [AppComponent, ChatWindowComponent, CanvasWindowComponent, NavbarComponent]
   }));
 
   it('should create the app', () => {
