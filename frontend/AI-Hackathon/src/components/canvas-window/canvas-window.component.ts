@@ -87,7 +87,7 @@ export class CanvasWindowComponent implements OnInit {
             1000
         );
         this.camera.position.y = 1.75;
-        this.camera.position.z = 0.85;
+        this.camera.position.z = 0.55;
         this.scene.add(this.camera);
 
         if (!this.canvas) {
