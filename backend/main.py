@@ -1,43 +1,62 @@
+from multiprocessing import context
+import os
 import openai
 import json
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from config import API_KEY
-# Set up Flask app
-app = Flask(__name__)
-CORS(app)
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.responses import Response
+from fastapi.encoders import jsonable_encoder
+from fastapi import Request
+from pydantic import BaseModel
+
+load_dotenv(".env")
+app = FastAPI()
 
 # Load GPT-3 config
-with open('prompts.json', 'r') as f:
-    gpt3_config = json.load(f)
+with open("context.txt", "r") as f:
+    context = f.read()
 
 # Initialize OpenAI with your API key from config.py
-openai.api_key = API_KEY  # Using the imported API_KEY
+openai.api_key = os.environ.get("OPENAI_API_KEY")  # Using the imported API_KEY
 
 
-@app.route('/ask', methods=['POST'])
-def ask_gpt3():
-    question = request.json.get('question', '')
+class gptRequestBody(BaseModel):
+    question: str | None = None
 
+
+# @app.route('/ask', methods=['POST'])
+@app.post("/api/ask")
+async def create_item(item: gptRequestBody):
+    return ask_gpt3(item.question)
+
+
+def ask_gpt3(question: str):
+    print("The question is: ")
+    print(question)
     if not question:
-        return jsonify({"error": "Question not provided"}), 400
+        return jsonable_encoder({"error": "Question not provided"}), 400
 
     # Construct the full prompt
-    full_prompt = f"{gpt3_config['context']} {gpt3_config['guidelines']} {question}"
+    full_prompt = f"{context}User: {question}\nAssistant:"
+    print("The full prompt is: ")
+    print(full_prompt)
 
     try:
         response = openai.Completion.create(
             prompt=full_prompt,
-            engine=gpt3_config['engine'],
-            max_tokens=gpt3_config['max_tokens'],
-            temperature=gpt3_config['temperature']
+            engine="text-davinci-002",
+            max_tokens=150,
+            temperature=0.5,
+            stop=None,
+            n=1,
         )
+        print("The answers are: ")
+        print(response.choices[0].text)
         answer = response.choices[0].text.strip()
-        return jsonify({"answer": answer})
+        print("The answer is: ")
+        print(answer)
+
+        return jsonable_encoder({"answer": answer})
 
     except Exception as e:
-        return jsonify({"error": f"Error obtaining answer: {str(e)}"}), 500
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        return jsonable_encoder({"error": f"Error obtaining answer: {str(e)}"}), 500
