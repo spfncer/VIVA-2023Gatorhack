@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ApiService } from 'src/services/api/api.service';
 import { AudioPlayerService } from 'src/services/audio-player/audio-player.service';
-import { AudioFetcherService } from 'src/services/audio-fetcher/audio-fetcher.service'
 
 /**
  * Displays a chat window
@@ -15,7 +14,7 @@ export class ChatWindowComponent {
   text = "";
   viseme: any;
 
-  constructor(private api: ApiService, private audioPlayer: AudioPlayerService, private audioFetcher: AudioFetcherService) {
+  constructor(private api: ApiService, private audioPlayer: AudioPlayerService) {
 
     // Sample of how to use API Service
     this.api.getHelloWorld().subscribe((data) => {
