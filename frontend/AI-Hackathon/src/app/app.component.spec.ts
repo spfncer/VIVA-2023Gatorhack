@@ -1,9 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { ChatWindowComponent } from 'src/components/chat-window/chat-window.component';
+import { HttpClientModule } from '@angular/common/http';
+import { CanvasWindowComponent } from 'src/components/canvas-window/canvas-window.component';
+import { NavbarComponent } from 'src/components/navbar/navbar.component';
 
 describe('AppComponent', () => {
   beforeEach(() => TestBed.configureTestingModule({
-    declarations: [AppComponent]
+    imports: [HttpClientModule],
+    declarations: [AppComponent, ChatWindowComponent, CanvasWindowComponent, NavbarComponent]
   }));
 
   it('should create the app', () => {
@@ -18,10 +23,4 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('AI-Hackathon');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('AI-Hackathon app is running!');
-  });
 });

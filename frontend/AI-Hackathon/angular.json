@@ -30,6 +30,7 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.less"
             ],
             "scripts": []
@@ -65,10 +66,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "AI-Hackathon:build:production"
+              "browserTarget": "AI-Hackathon:build:production",
+              "proxyConfig": "proxy.prod.conf.json"
             },
             "development": {
-              "browserTarget": "AI-Hackathon:build:development"
+              "browserTarget": "AI-Hackathon:build:development",
+              "proxyConfig": "proxy.dev.conf.json"
             }
           },
           "defaultConfiguration": "development"
@@ -95,10 +98,14 @@
             "styles": [
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [],
+            "karmaConfig": "karma.conf.js"
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

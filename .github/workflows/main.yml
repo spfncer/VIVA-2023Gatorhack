@@ -1,0 +1,45 @@
+name: Angular CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # This should speedup the CI tests, could be removed if needed. It just caches node modules. I've done this before in other projects
+      - name: Cache node modules
+        
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/frontend/AI-Hackathon/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      
+      # Below are the steps to test on each push / pull request
+      - name: Install Dependencies
+        working-directory: ./frontend/AI-Hackathon
+        run: npm i
+
+      - name: Run Unit Tests
+        working-directory: ./frontend/AI-Hackathon
+        run: npm run test:ci
+      
+      - name: Build Documentation
+        working-directory: ./frontend/AI-Hackathon
+        run: npm run docs:ci
+
+      - name: Run Build
+        working-directory: ./frontend/AI-Hackathon
+        run: npm run build:ci

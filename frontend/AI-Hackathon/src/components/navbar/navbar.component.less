@@ -1,0 +1,27 @@
+.wrapper {
+    width: 100vw;
+    height: 3.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: #232323;
+
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+
+    & .text {
+        margin: 0;
+        color: #FFFFFF;
+        font-size: 2em;
+        line-height: 2em;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    & .image {
+        height: 1em;
+        width: auto;
+        filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+    }
+}

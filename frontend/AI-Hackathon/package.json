@@ -4,10 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "docs": "npx compodoc -s -p tsconfig.doc.json"
+    "test": "ng test --karma-config karma.conf.js",
+    "docs": "npx compodoc -s -p tsconfig.doc.json",
+    "build": "ng build",
+    "test:ci": "ng test --karma-config karma.conf.js --watch=false --browsers=ChromeHeadlessCustom",
+    "docs:ci": "npx compodoc -p tsconfig.doc.json",
+    "build:ci": "ng build"
   },
   "private": true,
   "dependencies": {
@@ -19,7 +22,12 @@
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
+    "@ng-bootstrap/ng-bootstrap": "^15.1.1",
+    "@popperjs/core": "^2.11.6",
+    "@types/three": "^0.157.0",
+    "bootstrap": "^5.2.3",
     "rxjs": "~7.8.0",
+    "three": "^0.157.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },
@@ -27,6 +35,7 @@
     "@angular-devkit/build-angular": "^16.2.0",
     "@angular/cli": "~16.2.0",
     "@angular/compiler-cli": "^16.2.0",
+    "@angular/localize": "^16.2.0",
     "@compodoc/compodoc": "^1.1.21",
     "@types/jasmine": "~4.3.0",
     "jasmine-core": "~4.6.0",
@@ -35,6 +44,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "puppeteer": "^21.3.8",
     "typescript": "~5.1.3"
   }
 }
