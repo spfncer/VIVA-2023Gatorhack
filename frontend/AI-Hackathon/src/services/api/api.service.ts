@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 /**
@@ -10,12 +10,12 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
-    constructor(private http: HttpClient)  {}
+    constructor(private http: HttpClient) { }
 
     /**
      * Method to test server connection by getting hello world
      */
-    getHelloWorld(): Observable<any>  {
+    getHelloWorld(): Observable<any> {
         return this.http.get<any>(`/api`);
     }
 
@@ -24,8 +24,11 @@ export class ApiService {
      * @param {string} query the query to send to the server
      * @returns {Observable<any>} an angular observable to subscribe to in order to receive server response
      */
-    postQuery(query: string): Observable<any>  {
-        return this.http.post<any>(`/api/query`, query);
+    postQuery(query: string): Observable<any> {
+        let headers = new HttpHeaders();
+        headers.append('Content-Type', 'application/json');
+        let params = new HttpParams().set("text", query);
+        return this.http.get<any>(`/api/speak`, { headers, params });
     }
 
 }

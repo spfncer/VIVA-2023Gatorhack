@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatWindowComponent } from './chat-window.component';
 import { HttpClientModule } from '@angular/common/http';
+import { CanvasWindowComponent } from '../canvas-window/canvas-window.component';
 
 describe('ChatWindowComponent', () => {
   let component: ChatWindowComponent;
@@ -10,7 +11,7 @@ describe('ChatWindowComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule],
-      declarations: [ChatWindowComponent]
+      declarations: [ChatWindowComponent, CanvasWindowComponent]
     });
     fixture = TestBed.createComponent(ChatWindowComponent);
     component = fixture.componentInstance;
@@ -19,7 +20,7 @@ describe('ChatWindowComponent', () => {
     let div = fixture.debugElement.nativeElement.querySelector('div');
     div.click();
 
-    spyOn(component['audioPlayer']['audioObj'],'play').and.callFake(async ()=>{});
+    spyOn(component['audioPlayer']['audioObj'], 'play').and.callFake(async () => { });
   });
 
   it('should create', () => {
