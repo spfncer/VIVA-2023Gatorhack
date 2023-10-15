@@ -19,11 +19,13 @@ with open("context.txt", "r") as f:
 openai.api_key = os.environ.get("OPENAI_API_KEY")  # Using the imported API_KEY
 
 
+# class to get the question and conversation id from the request body
 class gptRequestBody(BaseModel):
     question: str | None = None
     conversation_ID: str
 
 
+# route returns next chat id to send back in requests
 @app.get("/api/getNextChat")
 async def getNextChat():
     global nextChatId
@@ -31,6 +33,7 @@ async def getNextChat():
     return jsonable_encoder({"conversation_ID": nextChatId})
 
 
+# route that takes in a question and conversation id and returns the answer
 @app.post("/api/ask")
 async def create_item(item: gptRequestBody):
     return ask_gpt3(item.conversation_ID, item.question)
@@ -64,9 +67,7 @@ def ask_gpt3(conversation_id: str, question: str):
             full_prompt = f"{context}User: {question}\nAssistant:"
     else:
         chat_history = []
-    print("The full prompt is: ")
-    print(full_prompt)
-
+    # attempt to get answer from gpt-3
     try:
         response = openai.Completion.create(
             prompt=full_prompt,
