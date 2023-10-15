@@ -1,9 +1,7 @@
-from multiprocessing import context
 import os
 import openai
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi.responses import Response
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
@@ -13,7 +11,7 @@ nextChatId = 0
 
 # Load GPT-3 config
 with open("context.txt", "r") as f:
-    context = f.read()
+    contextf = f.read()
 
 # Initialize OpenAI with your API key from config.py
 openai.api_key = os.environ.get("OPENAI_API_KEY")  # Using the imported API_KEY
@@ -40,6 +38,7 @@ async def create_item(item: gptRequestBody):
 
 
 conversation_history = {}
+last_messages = {}
 
 
 def ask_gpt3(conversation_id: str, question: str):
@@ -48,7 +47,7 @@ def ask_gpt3(conversation_id: str, question: str):
         return jsonable_encoder({"error": "Question not provided"}), 400
 
     # Construct the full prompt
-    full_prompt = f"{context}User: {question}\nAssistant:"
+    full_prompt = f"{contextf}User: {question}\nAssistant:"
     if conversation_id in conversation_history:
         chat_history = conversation_history[conversation_id]
         chat_length = len(chat_history)
@@ -62,11 +61,18 @@ def ask_gpt3(conversation_id: str, question: str):
                     for msg in last_three_messages
                 ]
             )
-            full_prompt = f"{context}messageHistory='''\n{message_history}\n''' {question}Assistant:"
+            full_prompt = f"{contextf}messageHistory='''\n{message_history}\n''' {question}Assistant:"
         else:
-            full_prompt = f"{context}User: {question}\nAssistant:"
+            full_prompt = f"{contextf}User: {question}\nAssistant:"
     else:
         chat_history = []
+
+    if conversation_id in last_messages:
+        last_message = last_messages[conversation_id]
+    else:
+        last_message = ""
+
+    print("Full prompt:", full_prompt)
     # attempt to get answer from gpt-3
     try:
         response = openai.Completion.create(
@@ -80,6 +86,13 @@ def ask_gpt3(conversation_id: str, question: str):
         answer = response.choices[0].text.strip()
         answer = answer.split("\n")[0]
 
+        if answer == "":
+            answer = "I don't know."
+        if answer == last_message:
+            # if gpt gives a duplicate answer, try again
+            return ask_gpt3(conversation_id, question)
+
+        last_messages[conversation_id] = answer
         chat_history.append({"question": question, "answer": answer})
         conversation_history[conversation_id] = chat_history
         return jsonable_encoder({"answer": answer})
