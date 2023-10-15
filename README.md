@@ -11,10 +11,12 @@ install all dependencies.
 
 Then use the command `uvicorn main:app --port 3000` to start the backend server locally. 
 
+Requires Python v3.8.10 & PIP 20.0.2
+
 ## Frontend
 
 To run the frontend, navigate to the `\frontend\AI-Hackathon` directory, then run `npm install`.
-This will install all node module dependencies.
+This will install all node module dependencies. Then run `npm run start` and nivagate to `localhost:4200` to view the app.
 
 Now, utilize the following commands to perform different actions:
 1. `npm run start` - begin the angular app in development mode with hot module reloading
