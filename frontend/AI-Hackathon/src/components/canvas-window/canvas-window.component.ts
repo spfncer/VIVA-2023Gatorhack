@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import * as THREE from 'three';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { randFloat } from 'three/src/math/MathUtils';
 
 declare var window: any;
 
@@ -15,20 +14,39 @@ declare var window: any;
 })
 export class CanvasWindowComponent implements OnInit {
 
+    // DO NOT MODIFY
     private canvas: HTMLElement | null = null;
     private scene = new THREE.Scene()
     private clock = new THREE.Clock();
     private camera = new THREE.PerspectiveCamera();
     private renderer = new THREE.WebGLRenderer();
     private loader = new GLTFLoader();
+    private mixer: THREE.AnimationMixer | null = null;
+
+    // Settings
+    private fps = 60
 
     // Objects
     private model: any;
+    private targetDict: any;
+
+    // Input Bindings
+    @Input()
+    public set viseme(value: string) {
+        if (!value) { return; }
+        if (!this.model) { return; }
+
+        let animationClip = this.createAnimation(value, this.targetDict, "Wolf3D_Avatar");
+        if (!animationClip) { return; }
+        if (!this.mixer) { return; }
+
+        let clipAction = this.mixer.clipAction(animationClip).setEffectiveWeight(1);
+        clipAction.setLoop(THREE.LoopOnce, 1).reset().play();
+        console.log(this.mixer);
+    }
 
     ngOnInit(): void {
         this.canvas = document.getElementById('canvas-box');
-
-        const material = new THREE.MeshToonMaterial();
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         this.scene.add(ambientLight);
@@ -40,12 +58,20 @@ export class CanvasWindowComponent implements OnInit {
         this.scene.add(pointLight);
 
         // Load the glTF model
-        this.loader.load('assets/man.glb', (gltf: any) => {
+        this.loader.load('assets/man.glb', ((gltf: any) => {
+            gltf.scene.traverse((node: any) => {
+                if (node.type == 'Mesh' || node.type == 'SkinnedMesh') {
+                    console.log(node);
+                    this.targetDict = node.morphTargetDictionary;
+                }
+            });
+
+            this.mixer = new THREE.AnimationMixer(gltf.scene);
+            this.mixer.timeScale = 1;
             this.model = gltf.scene;
             this.scene.add(this.model);
-            console.log(this.model);
-            this.model.children[0].children[1].morphTargets = true;
-        }, undefined, function (error: any) {
+            animateScene();
+        }).bind(this), undefined, function (error: any) {
             console.error(error);
         });
 
@@ -60,8 +86,8 @@ export class CanvasWindowComponent implements OnInit {
             0.001,
             1000
         );
-        this.camera.position.y = 1.65;
-        this.camera.position.z = 1.3;
+        this.camera.position.y = 1.75;
+        this.camera.position.z = 0.85;
         this.scene.add(this.camera);
 
         if (!this.canvas) {
@@ -85,27 +111,71 @@ export class CanvasWindowComponent implements OnInit {
             this.renderer.render(this.scene, this.camera);
         });
 
-
-
         const animateScene = () => {
-            const elapsedTime = this.clock.getElapsedTime();
 
-            // Update animation objects
-            if (this.model) {
-                // console.log(this.model);
-
-                this.model.children[0].children[1].morphTargetInfluences[0] = randFloat(0, 1);
-                this.model.children[0].children[1].updateMorphTargets();
-            }
+            // Call animateGeometry again on the next frame
+            window.requestAnimationFrame(animateScene);
 
             // Render
             this.renderer.render(this.scene, this.camera);
 
-            // Call animateGeometry again on the next frame
-            window.requestAnimationFrame(animateScene);
+            if (this.mixer) {
+                this.mixer.update(this.clock.getDelta());
+            }
+        }
+    }
+
+    private modifyKey(key: string) {
+        if (["eyeLookDownLeft", "eyeLookDownRight", "eyeLookInLeft", "eyeLookInRight", "eyeLookOutLeft", "eyeLookOutRight", "eyeLookUpLeft", "eyeLookUpRight"].includes(key)) {
+            return key
         }
 
-        animateScene();
+        if (key.endsWith("Right")) {
+            return key.replace("Right", "_R");
+        }
+        if (key.endsWith("Left")) {
+            return key.replace("Left", "_L");
+        }
+        return key;
+    }
+
+    private createAnimation(recordedData: any, morphTargetDictionary: any, bodyPart: any) {
+        if (recordedData.length != 0) {
+            let animation: any[] = []
+            for (let i = 0; i < Object.keys(morphTargetDictionary).length; i++) {
+                animation.push([])
+            }
+
+            let time: any[] = []
+            let finishedFrames = 0
+            recordedData.forEach((d: any, i: any) => {
+                Object.entries(d.BlendShapes).forEach(([key, value]) => {
+                    if (!(this.modifyKey(key) in morphTargetDictionary)) { return };
+
+                    if (key == 'mouthShrugUpper') {
+                        //@ts-ignore
+                        value += 0.4;
+                    }
+
+                    animation[morphTargetDictionary[this.modifyKey(key)]].push(value)
+                });
+                time.push(finishedFrames / this.fps)
+                finishedFrames++
+            });
+
+            let tracks: THREE.KeyframeTrack[] = []
+            //create morph animation
+            Object.entries(recordedData[0].BlendShapes).forEach(([key, value]) => {
+                if (!(this.modifyKey(key) in morphTargetDictionary)) { return };
+                let i = morphTargetDictionary[this.modifyKey(key)]
+                let track = new THREE.NumberKeyframeTrack(`${bodyPart}.morphTargetInfluences[${i}]`, time, animation[i])
+                tracks.push(track)
+            });
+
+            const clip = new THREE.AnimationClip('animation', -1, tracks);
+            return clip
+        }
+        return null
     }
 
 }

@@ -9,6 +9,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import base64
 import io
+import json
 
 load_dotenv(".env")
 app = FastAPI()
@@ -24,16 +25,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+blend_shape_names = [
+    "eyeBlinkLeft",
+    "eyeLookDownLeft",
+    "eyeLookInLeft",
+    "eyeLookOutLeft",
+    "eyeLookUpLeft",
+    "eyeSquintLeft",
+    "eyeWideLeft",
+    "eyeBlinkRight",
+    "eyeLookDownRight",
+    "eyeLookInRight",
+    "eyeLookOutRight",
+    "eyeLookUpRight",
+    "eyeSquintRight",
+    "eyeWideRight",
+    "jawForward",
+    "jawLeft",
+    "jawRight",
+    "jawOpen",
+    "mouthClose",
+    "mouthFunnel",
+    "mouthPucker",
+    "mouthLeft",
+    "mouthRight",
+    "mouthSmileLeft",
+    "mouthSmileRight",
+    "mouthFrownLeft",
+    "mouthFrownRight",
+    "mouthDimpleLeft",
+    "mouthDimpleRight",
+    "mouthStretchLeft",
+    "mouthStretchRight",
+    "mouthRollLower",
+    "mouthRollUpper",
+    "mouthShrugLower",
+    "mouthShrugUpper",
+    "mouthPressLeft",
+    "mouthPressRight",
+    "mouthLowerDownLeft",
+    "mouthLowerDownRight",
+    "mouthUpperUpLeft",
+    "mouthUpperUpRight",
+    "browDownLeft",
+    "browDownRight",
+    "browInnerUp",
+    "browOuterUpLeft",
+    "browOuterUpRight",
+    "cheekPuff",
+    "cheekSquintLeft",
+    "cheekSquintRight",
+    "noseSneerLeft",
+    "noseSneerRight",
+    "tongueOut",
+    "headRoll",
+    "leftEyeRoll",
+    "rightEyeRoll"
+]
+
+
 blends = []
-def viseme_cb(evt):
+timestamp = 0
+timestep = 1/60
+def update_blends(evt):
+    global timestamp
     print("Viseme event received: audio offset: {}ms, viseme id: {}.".format(evt.audio_offset / 10000, evt.viseme_id))
-
-    # `Animation` is an xml string for SVG or a json string for blend shapes
+    
     animation = evt.animation
-    print(animation)
-    if (animation is not ""):
-        blends.append(animation)
+    if animation != "":
+        animation = json.loads(evt.animation)
+        blendshapes = animation["BlendShapes"]
+        for shape in blendshapes:
+            blend = dict.fromkeys(blend_shape_names)
+            for ind, name in enumerate(blend_shape_names):
+                blend[name] = shape[ind]
 
+            blends.append({
+                "time" : timestamp, 
+                "BlendShapes" : blend
+            })
+            timestamp = timestamp + timestep
 
 def speakIt(text):
     # Config object gets key and region from enviornment variables
@@ -56,27 +127,21 @@ def speakIt(text):
         </voice>
     </speak>
     '''
-    
+
     # result contains the audio data which can be saved as a wav file
-    speech_synthesizer.viseme_received.connect(viseme_cb)
-    # speech_synthesizer.synthesis_completed.connect(viseme_cb)
+    speech_synthesizer.viseme_received.connect(update_blends)
+    # speech_synthesizer.synthesis_completed.connect(update_blends)
     result = speech_synthesizer.speak_ssml_async(ssml).get()
-    print(result)
-    
 
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print("Speech synthesized for text [{}]".format(text))
+        print("Blends: " + str(blends))
         # Build response object using result.audio_data
         response = {
             "audio" : base64.b64encode(result.audio_data),
             "text" : text,
             "viseme" : blends
         }
-        
-        # Response(content=result.audio_data, media_type="audio/wav")
-        # response.headers[
-        #     "Content-Disposition"
-        # ] = "attachment; filename=synthesized_audio.wav"
         return response
     elif result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = result.cancellation_details
@@ -89,6 +154,8 @@ def speakIt(text):
 
 @app.get("/speak")
 def read_root(text: str):
+    global timestamp 
+    timestamp = 0
     blends.clear()
     return JSONResponse(content=jsonable_encoder(speakIt(text)))
 
