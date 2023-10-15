@@ -3,13 +3,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 import azure.cognitiveservices.speech as speechsdk
-from azure.cognitiveservices.speech.audio import AudioOutputStream
-from fastapi.responses import Response
 from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import base64
-import io
 import json
 import openai
 from pydantic import BaseModel
@@ -19,7 +15,7 @@ app = FastAPI()
 nextChatId = 0
 
 # Prevent CORS BS
-origins = ['http://localhost:3000', 'http://localhost:4200']
+origins = ["http://localhost:3000", "http://localhost:4200"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -84,17 +80,23 @@ blend_shape_names = [
     "tongueOut",
     "headRoll",
     "leftEyeRoll",
-    "rightEyeRoll"
+    "rightEyeRoll",
 ]
 
 
 blends = []
 timestamp = 0
-timestep = 1/60
+timestep = 1 / 60
+
+
 def update_blends(evt):
     global timestamp
-    print("Viseme event received: audio offset: {}ms, viseme id: {}.".format(evt.audio_offset / 10000, evt.viseme_id))
-    
+    print(
+        "Viseme event received: audio offset: {}ms, viseme id: {}.".format(
+            evt.audio_offset / 10000, evt.viseme_id
+        )
+    )
+
     animation = evt.animation
     if animation != "":
         animation = json.loads(evt.animation)
@@ -104,11 +106,9 @@ def update_blends(evt):
             for ind, name in enumerate(blend_shape_names):
                 blend[name] = shape[ind]
 
-            blends.append({
-                "time" : timestamp, 
-                "BlendShapes" : blend
-            })
+            blends.append({"time": timestamp, "BlendShapes": blend})
             timestamp = timestamp + timestep
+
 
 def speakIt(text):
     # Config object gets key and region from enviornment variables
@@ -122,15 +122,15 @@ def speakIt(text):
     speech_synthesizer = speechsdk.SpeechSynthesizer(
         speech_config=speech_config, audio_config=None
     )
-    
-    ssml = f'''
+
+    ssml = f"""
     <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="en-US">
         <voice name="en-US-JasonNeural">
             <mstts:viseme type="FacialExpression"/>
             {text}
         </voice>
     </speak>
-    '''
+    """
 
     # result contains the audio data which can be saved as a wav file
     speech_synthesizer.viseme_received.connect(update_blends)
@@ -142,9 +142,9 @@ def speakIt(text):
         print("Blends: " + str(blends))
         # Build response object using result.audio_data
         response = {
-            "audio" : base64.b64encode(result.audio_data),
-            "text" : text,
-            "viseme" : blends
+            "audio": base64.b64encode(result.audio_data),
+            "text": text,
+            "viseme": blends,
         }
         return response
     elif result.reason == speechsdk.ResultReason.Canceled:
@@ -157,22 +157,25 @@ def speakIt(text):
 
 
 @app.get("/speak")
-def read_root(text: str):
-    global timestamp 
+def read_speak(text: str):
+    global timestamp
     timestamp = 0
     blends.clear()
     return JSONResponse(content=jsonable_encoder(speakIt(text)))
 
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-  
-  # Load GPT-3 config
+
+
+# Load GPT-3 config
 with open("context.txt", "r") as f:
     contextf = f.read()
 
 # Initialize OpenAI with your API key from config.py
 openai.api_key = os.environ.get("OPENAI_API_KEY")  # Using the imported API_KEY
+
 
 # class to get the question and conversation id from the request body
 class gptRequestBody(BaseModel):
@@ -187,13 +190,16 @@ async def getNextChat():
     nextChatId += 1
     return jsonable_encoder({"conversation_ID": nextChatId})
 
+
 # route that takes in a question and conversation id and returns the answer
 @app.post("/api/ask")
 async def create_item(item: gptRequestBody):
     return ask_gpt3(item.conversation_ID, item.question)
 
+
 conversation_history = {}
 last_messages = {}
+
 
 def ask_gpt3(conversation_id: str, question: str):
     global conversation_history
