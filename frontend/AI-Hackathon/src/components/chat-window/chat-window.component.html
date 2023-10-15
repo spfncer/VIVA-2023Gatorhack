@@ -1,7 +1,12 @@
 <div id="innerWindow">
-    <app-canvas-window [viseme]="viseme"></app-canvas-window>
-    <button mat-button (click)="this.makeQuery()">Click me!</button>
-    <div>
-        <p class="transcript">{{text}}</p>
+    <div class="transcript">
+        <button *ngIf="hasInitialized == false" style="text-align: center;"
+            (click)="makeQuery(); hasInitialized = true;">Begin
+            Your
+            Conversation</button>
+        <p *ngIf="hasInitialized == true" style="white-space: pre; margin: none;" class="transcript-text">
+            {{transcript +
+            promptText}}</p>
     </div>
+    <app-canvas-window [viseme]="viseme"></app-canvas-window>
 </div>
