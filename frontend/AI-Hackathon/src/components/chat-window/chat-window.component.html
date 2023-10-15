@@ -4,9 +4,9 @@
             (click)="makeQuery(); hasInitialized = true;">Begin
             Your
             Conversation</button>
-        <p *ngIf="hasInitialized == true" style="white-space: pre; margin: none;" class="transcript-text">
+        <p *ngIf="hasInitialized == true" style="white-space: pre-wrap; margin: none;" class="transcript-text">
             {{transcript +
             promptText}}</p>
     </div>
-    <app-canvas-window [viseme]="viseme"></app-canvas-window>
+    <app-canvas-window class="window" [viseme]="viseme"></app-canvas-window>
 </div>

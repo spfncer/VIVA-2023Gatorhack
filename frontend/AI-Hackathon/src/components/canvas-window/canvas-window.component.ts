@@ -97,7 +97,7 @@ export class CanvasWindowComponent implements OnInit {
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
         });
-        this.renderer.setClearColor(0xD52B1E, 1);
+        this.renderer.setClearColor(0xFFFFFF, 0); //0xD52B1E
         this.renderer.setSize(canvasSizes.width, canvasSizes.height);
 
         window.addEventListener('resize', () => {
