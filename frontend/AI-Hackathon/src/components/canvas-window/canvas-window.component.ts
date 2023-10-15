@@ -76,8 +76,8 @@ export class CanvasWindowComponent implements OnInit {
         });
 
         const canvasSizes = {
-            width: window.innerWidth,
-            height: window.innerHeight,
+            width: window.innerWidth / 2,
+            height: window.innerHeight / 3,
         };
 
         this.camera = new THREE.PerspectiveCamera(
@@ -101,8 +101,8 @@ export class CanvasWindowComponent implements OnInit {
         this.renderer.setSize(canvasSizes.width, canvasSizes.height);
 
         window.addEventListener('resize', () => {
-            canvasSizes.width = window.innerWidth;
-            canvasSizes.height = window.innerHeight;
+            canvasSizes.width = window.innerWidth / 2;
+            canvasSizes.height = window.innerHeight / 3;
 
             this.camera.aspect = canvasSizes.width / canvasSizes.height;
             this.camera.updateProjectionMatrix();

@@ -1,21 +1,10 @@
-app-chat-window {
-    display: block;
-    max-width: 19.5em;
-    max-height: 34.875em;
-    min-width: 9em;
-    min-height: 16em;
-    aspect-ratio: min(19.5/34.875, calc(16/9)); // maintain 16:9 aspect ratio with max width and height
-    box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
-    height: 100dvh;
+.chat-container {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 3.5em);
+    align-content: center;
+    justify-content: center;
+    align-items: center;
 
-    @media screen and (max-width: 480px) {
-        max-width: 100dvw;
-        max-height: 100dvh;
-        min-width: 100dvw;
-        min-height: 100dvh;
-        aspect-ratio: unset;
-        height: 100%;
-        width: 100%;
-        border: none;
-    }
+    height: calc(100vh - 3.5em);
 }

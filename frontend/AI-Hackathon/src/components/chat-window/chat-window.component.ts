@@ -23,6 +23,10 @@ export class ChatWindowComponent {
     });
   }
 
+  public makeQuery() {
+
+  }
+
   public playSound() {
     // Sample of how to use audio player service
     this.api.postQuery("The Neural Net Workers Have Almost Finished their project.").subscribe((data: any) => {
