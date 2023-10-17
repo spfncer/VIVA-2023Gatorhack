@@ -2,8 +2,9 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import HTMLResponse, FileResponse
 import azure.cognitiveservices.speech as speechsdk
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import base64
 import json
@@ -164,11 +165,6 @@ def read_speak(text: str):
     return JSONResponse(content=jsonable_encoder(speakIt(text)))
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
 # Load GPT-3 config
 with open("context.txt", "r") as f:
     contextf = f.read()
@@ -201,6 +197,21 @@ async def create_item(item: gptRequestBody):
 async def create_newitem(item: gptRequestBody):
     return speakIt(ask_gpt3(item.conversation_ID, item.question)["answer"])
 
+# your other routes here
+
+
+
+@app.get("/{path:path}")
+async def catch_all(path: str):
+    if path.endswith(".css"):
+        return FileResponse(os.path.join("ai-hackathon", path), media_type="text/css")
+    elif path.endswith(".js"):
+        return FileResponse(os.path.join("ai-hackathon", path), media_type="application/javascript")
+    elif path.endswith(".png"):
+        return FileResponse(os.path.join("ai-hackathon", path), media_type="image/png")
+    else:
+        with open("ai-hackathon/index.html") as f:
+            return HTMLResponse(content=f.read(), status_code=200)
 
 conversation_history = {}
 last_messages = {}
